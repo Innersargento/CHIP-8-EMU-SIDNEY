@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "utils.h"
+#include "../include/utils.h"
+#include <time.h>
 
 #define START_ADDRESS 0x200
 #define FONT_START_ADDRESS 0x50

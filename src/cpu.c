@@ -1,4 +1,4 @@
-#include "cpu.h"
+#include "../include/cpu.h"
 
 static const uint8_t font[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -41,6 +41,8 @@ void chip_8_init(chip_8* chip){
 void chip_8_loop(chip_8* chip){
 
     uint16_t instruction;
+    uint8_t flag;
+    srand(time(NULL));
     instruction = chip_8_get_instruction(chip);
     chip->program_counter += NEXT_INSTRUCTION; // Pula instrução
 
@@ -68,6 +70,51 @@ void chip_8_loop(chip_8* chip){
         case 0xA: chip->I = get_address(instruction);
                   break;
         case 0xD: chip_8_draw(chip, instruction);
+                  break;
+        case 0x3: if(get_vx(instruction) == get_immediate_number(instruction))
+                        chip->program_counter += NEXT_INSTRUCTION;
+                  break;
+        case 0x4: if(get_vx(instruction) != get_immediate_number(instruction))
+                        chip->program_counter += NEXT_INSTRUCTION; 
+                  break; 
+        case 0x5: if(get_vx(instruction) == get_vy(instruction))
+                        chip->program_counter += NEXT_INSTRUCTION;
+                  break;
+        case 0x9: if(get_vx(instruction) != get_vy(instruction))
+                        chip->program_counter += NEXT_INSTRUCTION;
+                  break;
+        case 0x8: switch(get_last_nibble(instruction)){
+            case 0x0: chip->V[get_vx(instruction)] = chip->V[get_vy(instruction)];
+                      break;
+            case 0x1: chip->V[get_vx(instruction)] = get_vx(instruction) | get_vy(instruction);
+                      break;
+            case 0x2: chip->V[get_vx(instruction)] = get_vx(instruction) & get_vy(instruction);
+                      break;
+            case 0x3: chip->V[get_vx(instruction)] = get_vx(instruction) ^ get_vy(instruction);
+                      break;
+            case 0x4: chip->V[get_vx(instruction)] = get_vx(instruction) + get_vy(instruction);
+                      break;
+            case 0x5: chip->V[get_vx(instruction)] = get_vx(instruction) - get_vy(instruction);
+                      break;
+            case 0x7: chip->V[get_vx(instruction)] = get_vy(instruction) - get_vx(instruction);
+                      break;
+            case 0x6: chip->V[get_vx(instruction)] = chip->V[get_vy(instruction)];
+                      flag = chip->V[get_vx(instruction)] & 1;
+                      chip->V[get_vx(instruction)] = chip->V[get_vx(instruction)] >> 1;
+                      chip->V[0xF] = flag;
+                      break;
+            case 0xE: chip->V[get_vx(instruction)] = chip->V[get_vy(instruction)];
+                      flag = chip->V[get_vx(instruction)] >> 7;
+                      chip->V[get_vx(instruction)] = chip->V[get_vx(instruction)] << 1;
+                      chip->V[0xF] = flag;
+                      break;
+        }; 
+                  break;
+        
+        case 0xB: chip->program_counter = get_address(instruction) + chip->V[0];
+                  break;
+        case 0xC: uint8_t random_value = (uint8_t)rand(); 
+                  chip->V[get_vx(instruction)] = random_value & get_immediate_number(instruction);
                   break;
     }
 }

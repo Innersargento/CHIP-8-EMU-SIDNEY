@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "../include/utils.h"
 
 uint16_t get_address(uint16_t instruction){
 
