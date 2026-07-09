@@ -30,6 +30,11 @@ typedef struct {
     TTF_Text* title;
 } menu;
 
+typedef enum {
+    PRESSED,
+    NOT_PRESSED
+} key_state;
+
 void screen_render(chip_8* chip, SDL_Renderer* renderer, SDL_Color color){
     for(int row = 0; row < 32; ++row ){
         for(int col = 0; col < 64; ++col){
@@ -42,26 +47,26 @@ void screen_render(chip_8* chip, SDL_Renderer* renderer, SDL_Color color){
     }
 }
 
-/*void input(chip_8* chip, Uint32 scan_code){
+uint8_t input(Uint32 scan_code){
     switch(scan_code){
-        case SDLK_1:
-        case SDLK_2:
-        case SDLK_3:
-        case SDLK_4:
-        case SDLK_Q:
-        case SDLK_W:
-        case SDLK_E:
-        case SDLK_R:
-        case SDLK_A:
-        case SDLK_S:
-        case SDLK_D:
-        case SDLK_F:
-        case SDLK_Z:
-        case SDLK_X:
-        case SDLK_C:
-        case SDLK_V:
+        case SDLK_1: return 0x01; break;
+        case SDLK_2: return 0x02; break;
+        case SDLK_3: return 0x03; break;
+        case SDLK_4: return 0x0F; break;
+        case SDLK_Q: return 0x04; break;
+        case SDLK_W: return 0x05; break;
+        case SDLK_E: return 0x06; break;
+        case SDLK_R: return 0x0D; break;
+        case SDLK_A: return 0x07; break;
+        case SDLK_S: return 0x08; break;
+        case SDLK_D: return 0x09; break;
+        case SDLK_F: return 0x0E; break;
+        case SDLK_Z: return 0x0A; break;
+        case SDLK_X: return 0x00; break;
+        case SDLK_C: return 0x0B; break;
+        case SDLK_V: return 0x0C; break;
     }
-} */
+}
 
 int main(){
 
@@ -71,7 +76,6 @@ int main(){
 
     init(&window);
     chip_8_init(&chip);
-    
 
     main_menu.buttons[0] = (menu_button){"Load ROM", NULL, SCREEN_WIDTH/2, SCREEN_HEIGHT/4, BUTTON_WIDTH, BUTTON_HEIGHT, 0x01};
     main_menu.title = TTF_CreateText(window.engine, window.font, "CHIP-8-EMU", 0);
@@ -97,7 +101,12 @@ int main(){
                 switch(ID){
                     case 0x01: open_rom_dialog(&window, &req); break;
                 };
-                break;  
+                break;
+                case SDL_EVENT_KEY_DOWN: 
+                    chip.last_key = input(event.key.scancode); 
+                    chip.key_state = PRESSED;
+                    break; 
+
             }
         }
         if (SDL_GetAtomicInt(&req.ready)) {
@@ -113,6 +122,7 @@ int main(){
         } else {
             chip_8_loop(&chip);
             screen_render(&chip, window.renderer, white);
+            chip.key_state = NOT_PRESSED;
         }
         SDL_RenderPresent(window.renderer);
     }

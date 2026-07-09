@@ -68,16 +68,16 @@ void chip_8_loop(chip_8* chip){
                   break;
         case 0xD: chip_8_draw(chip, instruction);
                   break;
-        case 0x3: if(get_vx(instruction) == get_immediate_number(instruction))
+        case 0x3: if(chip->V[get_vx(instruction)] == get_immediate_number(instruction))
                         chip->program_counter += NEXT_INSTRUCTION;
                   break;
-        case 0x4: if(get_vx(instruction) != get_immediate_number(instruction))
+        case 0x4: if(chip->V[get_vx(instruction)] != get_immediate_number(instruction))
                         chip->program_counter += NEXT_INSTRUCTION; 
                   break; 
-        case 0x5: if(get_vx(instruction) == get_vy(instruction))
+        case 0x5: if(chip->V[get_vx(instruction)] == get_vy(instruction))
                         chip->program_counter += NEXT_INSTRUCTION;
                   break;
-        case 0x9: if(get_vx(instruction) != get_vy(instruction))
+        case 0x9: if(chip->V[get_vx(instruction)] != get_vy(instruction))
                         chip->program_counter += NEXT_INSTRUCTION;
                   break;
         case 0x8: switch(get_last_nibble(instruction)){
@@ -113,6 +113,16 @@ void chip_8_loop(chip_8* chip){
         case 0xC: uint8_t random_value = (uint8_t)rand(); 
                   chip->V[get_vx(instruction)] = random_value & get_immediate_number(instruction);
                   break;
+        case 0xE: if(chip->key_state){
+            switch(get_last_nibble(instruction)){
+                case 0xE: if(chip->V[get_vx(instruction)] == chip->last_key){
+                    chip->program_counter += NEXT_INSTRUCTION;
+                } break;
+                case 0x1: if(chip->V[get_vx(instruction)] != chip->last_key){
+                    chip->program_counter += NEXT_INSTRUCTION; 
+                } break;
+            }
+        } break;
     }
 }
 
@@ -202,4 +212,9 @@ void chip_8_clear_screen(chip_8* chip){
             chip->screen[row][col] = 0;
         }
     }
+}
+
+void chip_8_update_timers(chip_8* chip){
+    if(chip->timer > 0) chip->timer--;
+    if(chip->sound > 0) chip->sound--;
 }

@@ -18,6 +18,10 @@
 #define STACK_EMPTY -1
 #define HEIGHT 32
 #define WIDTH 64
+#define TIMER_HZ        60.0
+#define TIMER_INTERVAL  (1000.0 / TIMER_HZ)
+#define CPU_HZ          600
+#define CYCLES_PER_FRAME (CPU_HZ / (int)TIMER_HZ)
 
 typedef struct {
     uint16_t stack[STACK_SIZE];
@@ -35,6 +39,8 @@ typedef struct {
     //16 registradores V0...VF
     uint8_t V[16]; 
     bool screen[HEIGHT][WIDTH];
+    uint8_t last_key;
+    bool key_state;
 
 }chip_8;
 
@@ -55,5 +61,7 @@ uint16_t chip_8_stack_pop(chip_8* chip);
 void chip_8_draw(chip_8* chip, uint16_t instruction);
 
 void chip_8_clear_screen(chip_8* chip);
+
+void chip_8_update_timers(chip_8* chip);
 
 #endif
