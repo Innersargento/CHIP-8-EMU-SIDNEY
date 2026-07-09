@@ -33,9 +33,6 @@ void chip_8_init(chip_8* chip){
         chip->memory[FONT_START_ADDRESS + i] = font[i]; //050...09F
     }
 
-    //Carregar a rom na memória
-    chip_8_load_rom(chip, "IBM");
-
 }
 
 void chip_8_loop(chip_8* chip){
@@ -126,30 +123,27 @@ uint16_t chip_8_get_instruction(chip_8* chip){
     return (high << 8) | low;
 }
 
-void chip_8_load_rom(chip_8* chip, char* file_name){
+void chip_8_load_rom(chip_8* chip, const char* file_path){
 
-    FILE* rom = fopen(file_name, "rb");
+
+    size_t size = 0;
+    void *data = SDL_LoadFile(file_path, &size);
+
     
-    if (rom == NULL) {
+    if (data == NULL) {
+        fprintf(stderr, "ERROR: %s", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
-    if(fseek(rom, 0, SEEK_END)){ // Função fseek(**arquivo**, **offset**, **posição do cursor no arquivo**) 
-        fclose(rom);
+    if(size == 0 || size > (MEMORY_SIZE - START_ADDRESS)){
+        fprintf(stderr, "ERROR: %s", SDL_GetError());
+        SDL_free(data);
         exit(EXIT_FAILURE);
     }
 
-    long rom_size = ftell(rom); // ftell retorna a quantidade  
-
-    if(fseek(rom, 0, SEEK_SET)){
-        fclose(rom);
-        exit(EXIT_FAILURE);
-    }
-
-    fread(chip->memory + START_ADDRESS, 1,  rom_size, rom);
-
-    fclose(rom);
-
+    chip_8_init(chip);
+    SDL_memcpy(chip->memory + START_ADDRESS, data, size);
+    SDL_free(data);
 }
 
 void chip_8_stack_push(chip_8* chip, uint16_t address){

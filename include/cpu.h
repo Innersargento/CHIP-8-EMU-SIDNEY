@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "../include/utils.h"
 #include <time.h>
+#include <SDL3/SDL.h>
 
 #define START_ADDRESS 0x200
 #define FONT_START_ADDRESS 0x50
