@@ -46,7 +46,7 @@ void chip_8_loop(chip_8* chip);
 
 uint16_t chip_8_get_instruction(chip_8* chip);
 
-void chip_8_load_rom(chip_8* chip, char* file_name);
+bool chip_8_load_rom(chip_8* chip, const char* file_path);
 
 void chip_8_stack_push(chip_8* chip, uint16_t address);
 

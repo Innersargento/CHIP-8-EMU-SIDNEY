@@ -17,7 +17,7 @@ void init(chip_window* window){
         exit(EXIT_FAILURE);
     }
 
-    window->font = TTF_OpenFont(FONT_PATH, FONT_SIZE);
+    window->font = TTF_OpenFont(FONT_PATH, UI_FONT_SIZE);
 
     if(window->font == NULL){
         fprintf(stderr, "ERROR: %s", SDL_GetError());
@@ -110,4 +110,25 @@ void destroy_buttons(menu_button* buttons, int count){
         TTF_DestroyText(buttons[i].label);
         buttons[i].label = NULL;
     }
+}
+
+static void SDLCALL rom_dialog_callback(void *userdata, const char * const *filelist, int filter){
+
+    (void)filter;
+    rom_request *req = (rom_request *)userdata;
+
+    if (filelist == NULL) {
+        fprintf(stderr, "DIALOG ERROR: %s\n", SDL_GetError());
+        return;
+    }
+    if (filelist[0] == NULL) { 
+        return;
+    }
+
+    SDL_strlcpy(req->path, filelist[0], sizeof(req->path));
+    SDL_SetAtomicInt(&req->ready, 1);
+}
+
+void open_rom_dialog(chip_window *window, rom_request *req) {
+    SDL_ShowOpenFileDialog(rom_dialog_callback, req, window->window, rom_filters, SDL_arraysize(rom_filters), NULL, false);              
 }

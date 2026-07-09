@@ -123,7 +123,7 @@ uint16_t chip_8_get_instruction(chip_8* chip){
     return (high << 8) | low;
 }
 
-void chip_8_load_rom(chip_8* chip, const char* file_path){
+bool chip_8_load_rom(chip_8* chip, const char* file_path){
 
 
     size_t size = 0;
@@ -132,18 +132,19 @@ void chip_8_load_rom(chip_8* chip, const char* file_path){
     
     if (data == NULL) {
         fprintf(stderr, "ERROR: %s", SDL_GetError());
-        exit(EXIT_FAILURE);
+        return false;
     }
 
     if(size == 0 || size > (MEMORY_SIZE - START_ADDRESS)){
         fprintf(stderr, "ERROR: %s", SDL_GetError());
         SDL_free(data);
-        exit(EXIT_FAILURE);
+        return false;
     }
 
     chip_8_init(chip);
     SDL_memcpy(chip->memory + START_ADDRESS, data, size);
     SDL_free(data);
+    return true;
 }
 
 void chip_8_stack_push(chip_8* chip, uint16_t address){
