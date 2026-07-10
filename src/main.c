@@ -5,10 +5,10 @@
 #include "../include/cpu.h"
 #include "../include/menu.h"
 
-#define CHIP_8_SCREEN_WIDTH 64
-#define CHIP_8_SCREEN_HEIGHT 32
-#define PIXEL_X_SIZE SCREEN_WIDTH/CHIP_8_SCREEN_WIDTH
-#define PIXEL_Y_SIZE SCREEN_HEIGHT/CHIP_8_SCREEN_HEIGHT
+#define CHIP_8_SCREEN_WIDTH   64
+#define CHIP_8_SCREEN_HEIGHT  32
+#define PIXEL_X_SIZE          SCREEN_WIDTH/CHIP_8_SCREEN_WIDTH
+#define PIXEL_Y_SIZE          SCREEN_HEIGHT/CHIP_8_SCREEN_HEIGHT
 
 
 SDL_Color white = {
@@ -26,13 +26,13 @@ SDL_Color black = {
 };
 
 typedef struct {
-    menu_button buttons[BUTTONS];
-    TTF_Text* title;
+    menu_button  buttons[BUTTONS];
+    TTF_Text*    title;
 } menu;
 
 typedef enum {
-    PRESSED,
-    NOT_PRESSED
+    NOT_PRESSED,
+    PRESSED
 } key_state;
 
 void screen_render(chip_8* chip, SDL_Renderer* renderer, SDL_Color color){
