@@ -131,6 +131,31 @@ void chip_8_loop(chip_8* chip){
                         chip->program_counter += NEXT_INSTRUCTION; 
                     }   break;
         } break;
+
+        case 0xF: switch(nn){
+                    case 0x07: 
+                    chip->V[x] = chip->timer;
+                    break;
+                    case 0x15:
+                    chip->timer = chip->V[x];
+                    break;
+                    case 0x18: 
+                    chip->sound = chip->V[x];
+                    break;
+                    case 0x1E:  
+                    chip->I = (chip->I + chip->V[x]) & 0x0FFF;
+                    break;
+                    case 0x0A:
+                    if(chip->key_state){
+                        chip->V[x] = chip->last_key;
+                    } else {
+                        chip->program_counter = (chip->program_counter - NEXT_INSTRUCTION) & 0x0FFF; // repete
+                    }
+                    break;
+                    case 0x29:
+                    chip->I = chip_8_get_font_address(chip->V[x]);
+                    break;
+        }
     }
 }
 
@@ -225,4 +250,24 @@ void chip_8_clear_screen(chip_8* chip){
 void chip_8_update_timers(chip_8* chip){
     if(chip->timer > 0) chip->timer--;
     if(chip->sound > 0) chip->sound--;
+}
+
+uint8_t chip_8_get_font_address(uint8_t value){
+    switch(value){
+        case 0x00: return FONT_START_ADDRESS;
+        case 0x01: return FONT_START_ADDRESS + 5;
+        case 0x02: return FONT_START_ADDRESS + 10;
+        case 0x03: return FONT_START_ADDRESS + 15;
+        case 0x04: return FONT_START_ADDRESS + 20;
+        case 0x05: return FONT_START_ADDRESS + 25;
+        case 0x06: return FONT_START_ADDRESS + 30;
+        case 0x07: return FONT_START_ADDRESS + 35;
+        case 0x08: return FONT_START_ADDRESS + 40;
+        case 0x09: return FONT_START_ADDRESS + 45;
+        case 0x0A: return FONT_START_ADDRESS + 50;
+        case 0x0B: return FONT_START_ADDRESS + 55;
+        case 0x0C: return FONT_START_ADDRESS + 60;
+        case 0x0D: return FONT_START_ADDRESS + 65;
+        case 0x0F: return FONT_START_ADDRESS + 70;
+    }
 }

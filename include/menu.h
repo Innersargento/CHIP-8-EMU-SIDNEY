@@ -45,6 +45,8 @@ static const SDL_DialogFileFilter rom_filters[] = {
 
 uint8_t button_pressed(menu_button* buttons, float x, float y, int count);
 
+uint8_t chip_8_get_font_address(uint8_t value);
+
 static void SDLCALL rom_dialog_callback(void *userdata, const char * const *filelist, int filter);
 
 bool init_button(chip_window* window, menu_button* button, SDL_Color text_color);
