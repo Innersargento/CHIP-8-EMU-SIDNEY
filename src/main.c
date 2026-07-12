@@ -86,6 +86,9 @@ int main(){
     req.path[0] = '\0';
     SDL_SetAtomicInt(&req.ready, 0);
     bool rom_loaded = false;
+    Uint64 now = SDL_GetTicks();
+    Uint64 past = now;
+    double accumulator = 0.0;
 
     init_buttons(&window, main_menu.buttons, white, BUTTONS);
 
@@ -124,11 +127,22 @@ int main(){
             render_buttons(&window, main_menu.buttons, white, black, white, BUTTONS);
             TTF_DrawRendererText(main_menu.title, SCREEN_WIDTH/2 - text_w/2, 10);
         } else {
-            chip_8_loop(&chip);
+            while (accumulator >= TIMER_INTERVAL_MS) {
+                for (int c = 0; c < CYCLES_PER_TICK; c++)
+                    chip_8_loop(&chip);
+
+                chip_8_update_timers(&chip);
+                accumulator -= TIMER_INTERVAL_MS;
+            }
             screen_render(&chip, window.renderer, white);
             chip.key_state = NOT_PRESSED;
         }
         SDL_RenderPresent(window.renderer);
+        past = now;
+        now = SDL_GetTicks();
+        accumulator += now - past;
+        if (accumulator > MAX_ACCUMULATOR_MS)
+            accumulator = MAX_ACCUMULATOR_MS;
     }
 
     destroy_buttons(main_menu.buttons, BUTTONS);

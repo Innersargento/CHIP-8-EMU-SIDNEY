@@ -155,6 +155,23 @@ void chip_8_loop(chip_8* chip){
                     case 0x29:
                     chip->I = chip_8_get_font_address(chip->V[x]);
                     break;
+                    case 0x33: {
+                        int n = chip->V[x];
+                        chip->memory[chip->I + 2] = n % 10;
+                        chip->memory[chip->I + 1] = (n / 10) % 10;
+                        chip->memory[chip->I]     = n/100;
+                    } break;
+                    case 0x55: {
+                        for(int i = 0; i <= x; i++){
+                            chip->memory[chip->I + i] = chip->V[i];
+                        }
+                    } break;
+                    case 0x65: {
+                        for(int i = 0; i <= x; i++){
+                            chip->V[i] = chip->memory[chip->I + i];
+                        }
+                    } break;
+
         }
     }
 }

@@ -18,6 +18,11 @@
 #define STACK_EMPTY            -1
 #define HEIGHT                 32
 #define WIDTH                  64
+#define TIMER_HZ               60
+#define TIMER_INTERVAL_MS      (1000.0 / TIMER_HZ)   // ~16.666 ms por tique
+#define CPU_HZ                660
+#define CYCLES_PER_TICK        (CPU_HZ / TIMER_HZ)   // = 11 instruções por tique
+#define MAX_ACCUMULATOR_MS    250.0
 
 
 typedef struct {
