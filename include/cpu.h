@@ -48,7 +48,7 @@ uint16_t chip_8_get_instruction(chip_8* chip);
 
 uint16_t chip_8_stack_pop(chip_8* chip);
 
-uint8_t chip_8_get_font_address(uint8_t value);
+uint16_t chip_8_get_font_address(uint8_t value);
 
 bool chip_8_load_rom(chip_8* chip, const char* file_path);
 
