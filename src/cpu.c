@@ -266,22 +266,6 @@ void chip_8_update_timers(chip_8* chip){
     if(chip->sound > 0) chip->sound--;
 }
 
-uint8_t chip_8_get_font_address(uint8_t value){
-    switch(value){
-        case 0x00: return FONT_START_ADDRESS;
-        case 0x01: return FONT_START_ADDRESS + 5;
-        case 0x02: return FONT_START_ADDRESS + 10;
-        case 0x03: return FONT_START_ADDRESS + 15;
-        case 0x04: return FONT_START_ADDRESS + 20;
-        case 0x05: return FONT_START_ADDRESS + 25;
-        case 0x06: return FONT_START_ADDRESS + 30;
-        case 0x07: return FONT_START_ADDRESS + 35;
-        case 0x08: return FONT_START_ADDRESS + 40;
-        case 0x09: return FONT_START_ADDRESS + 45;
-        case 0x0A: return FONT_START_ADDRESS + 50;
-        case 0x0B: return FONT_START_ADDRESS + 55;
-        case 0x0C: return FONT_START_ADDRESS + 60;
-        case 0x0D: return FONT_START_ADDRESS + 65;
-        case 0x0F: return FONT_START_ADDRESS + 70;
-    }
+uint16_t chip_8_get_font_address(uint8_t value){
+    return FONT_START_ADDRESS + (value & 0x0F) * 5;
 }
