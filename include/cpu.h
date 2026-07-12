@@ -38,8 +38,7 @@ typedef struct {
     uint8_t sound;
     uint8_t memory[MEMORY_SIZE];
     uint8_t V[16];
-    uint8_t last_key;
-    bool key_state;
+    bool keys[16];
     bool screen[HEIGHT][WIDTH];
     stack_memory stack;
 

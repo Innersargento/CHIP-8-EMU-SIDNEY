@@ -124,12 +124,8 @@ void chip_8_loop(chip_8* chip){
                   chip->V[x] = random_value & nn;
         }         break;
         case 0xE: switch(nn){
-                    case 0x9E: if(chip->key_state && chip->V[x] == chip->last_key){
-                        chip->program_counter += NEXT_INSTRUCTION;
-                    }   break;
-                    case 0xA1: if(!chip->key_state || chip->V[x] != chip->last_key){
-                        chip->program_counter += NEXT_INSTRUCTION; 
-                    }   break;
+                case 0x9E: if( chip->keys[chip->V[x] & 0x0F]) chip->program_counter += NEXT_INSTRUCTION; break;
+                case 0xA1: if(!chip->keys[chip->V[x] & 0x0F]) chip->program_counter += NEXT_INSTRUCTION; break;
         } break;
 
         case 0xF: switch(nn){
@@ -145,13 +141,14 @@ void chip_8_loop(chip_8* chip){
                     case 0x1E:  
                     chip->I = (chip->I + chip->V[x]) & 0x0FFF;
                     break;
-                    case 0x0A:
-                    if(chip->key_state){
-                        chip->V[x] = chip->last_key;
-                    } else {
-                        chip->program_counter = (chip->program_counter - NEXT_INSTRUCTION) & 0x0FFF; // repete
-                    }
-                    break;
+                    case 0x0A: {
+                        bool pressed = false;
+                         for(int i = 0; i < 16; i++){
+                            if(chip->keys[i]){ chip->V[x] = i; pressed = true; break; }
+                        }
+                        if(!pressed)
+                            chip->program_counter = (chip->program_counter - NEXT_INSTRUCTION) & 0x0FFF;
+                        } break;
                     case 0x29:
                     chip->I = chip_8_get_font_address(chip->V[x]);
                     break;

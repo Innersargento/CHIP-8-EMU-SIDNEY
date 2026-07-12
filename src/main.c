@@ -30,11 +30,6 @@ typedef struct {
     TTF_Text*    title;
 } menu;
 
-typedef enum {
-    NOT_PRESSED,
-    PRESSED
-} key_state;
-
 void screen_render(chip_8* chip, SDL_Renderer* renderer, SDL_Color color){
     for(int row = 0; row < 32; ++row ){
         for(int col = 0; col < 64; ++col){
@@ -110,9 +105,14 @@ int main(){
                 }
                 break;
                 case SDL_EVENT_KEY_DOWN: {
-                    uint8_t k      = input(event.key.key);  
-                    if(k != 0xFF){ chip.last_key = k; chip.key_state = PRESSED; }
-                    break; 
+                    uint8_t k = input(event.key.key);
+                    if(k != 0xFF) chip.keys[k] = true;
+                    break;
+                    }
+                case SDL_EVENT_KEY_UP: {
+                    uint8_t k = input(event.key.key);
+                    if(k != 0xFF) chip.keys[k] = false;
+                    break;
                 }
             }
         }
@@ -135,7 +135,6 @@ int main(){
                 accumulator -= TIMER_INTERVAL_MS;
             }
             screen_render(&chip, window.renderer, white);
-            chip.key_state = NOT_PRESSED;
         }
         SDL_RenderPresent(window.renderer);
         past = now;
